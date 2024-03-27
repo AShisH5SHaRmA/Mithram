@@ -17,12 +17,12 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final SpeechToText speechToText = SpeechToText();
-  final FlutterTts flutterTts = FlutterTts();
+  final FlutterTts flutterTts = FlutterTts();// for text to speech
   String lastWords = '';
   final OpenAIService openAIService = OpenAIService();
   String? generatedContent;
   String? generatedImageUrl;
-  int start = 200;
+  int start = 200; // used in the annimation for delay and start the animation of the dialog boxes
   int delay = 200;
   @override
   void initState() {
@@ -33,7 +33,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> initTextToSpeech() async {
     await flutterTts.setSharedInstance(true);
-    setState(() {});
+    setState(() {});// rebuild based on this
   }
 
   Future<void> initSpeechToText() async {
@@ -58,7 +58,7 @@ class _HomePageState extends State<HomePage> {
       lastWords = result.recognizedWords;
     });
   }
-
+ // this function will work to speak the content it recie
   Future<void> systemSpeak(String content) async {
     await flutterTts.speak(content);
   }
@@ -68,14 +68,14 @@ class _HomePageState extends State<HomePage> {
     // TODO: implement dispose
     super.dispose();
     speechToText.stop();
-    flutterTts.stop();
+    flutterTts.stop(); // to stop
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: BounceInDown(child: const Text("Mithram")),
+        title: BounceInDown(child: const Text("Mithram")),// to bounce down when app opens
         leading: const Icon(Icons.menu),
         centerTitle: true,
       ),
@@ -108,7 +108,7 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-            FadeInRight(
+            FadeInRight(// animatation to fade from the right when the app starts
               child: Visibility(
                 visible: generatedImageUrl == null,
                 child: Container(
@@ -169,7 +169,8 @@ class _HomePageState extends State<HomePage> {
             ),
             //feature
             Visibility(
-              visible: generatedContent == null && generatedImageUrl == null,
+              // means the dialg boxes and the goodmorning dialog
+              visible: generatedContent == null && generatedImageUrl == null,// it only shows up when the generated url and the generated image is null
               child: Column(children:  [
                 SlideInLeft(
                   delay:Duration(milliseconds:start),
@@ -203,8 +204,8 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      floatingActionButton: ZoomIn(
-        delay: Duration(milliseconds: start + 3*delay),
+      floatingActionButton: ZoomIn(// for the mic
+        delay: Duration(milliseconds: start + 3*delay),// after the last suggestion box
         child: FloatingActionButton(
             backgroundColor: Color.fromARGB(255, 55, 86, 114),
             onPressed: () async {
@@ -212,8 +213,8 @@ class _HomePageState extends State<HomePage> {
                   speechToText.isNotListening) {
                 await startListening();
               } else if (speechToText.isListening) {
-                final speech = await openAIService.isArtPromptAPI(lastWords);
-                if (speech.contains('https')) {
+                final speech = await openAIService.isArtPromptAPI(lastWords);// the content returning from the open AI aPI ON PASSSING THE LAST(GENREATED FROM SPEECH TPO TEXT RECOGNITION)
+                if (speech.contains('https')) {// if it is image..here checking the which api is responding
                   generatedImageUrl = speech;
                   generatedContent = null;
                   setState(() {});
@@ -228,6 +229,7 @@ class _HomePageState extends State<HomePage> {
                 initSpeechToText();
               }
             },
+          // to control the mic image if listening  stop:mic
             child: Icon(speechToText.isListening ? Icons.stop : Icons.mic)),
       ),
     );
